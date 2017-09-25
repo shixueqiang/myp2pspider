@@ -40,29 +40,41 @@ p2p.on('metadata', function (metadata) {
             console.error(err);
         } else {
             console.log("insert torrent result:" + result);
-            fs.exists(torrentDir,function(exist) {
-                if(!exist) {
-                    fs.mkdir(torrentDir,function(err) {
-                        if(err) {
-                            console.error(err);
-                        } else {
-                            fs.writeFile(torrentFilePathSaveTo, bencode.encode({'info': metadata.info}), function(err) {
-                                if (err) {
-                                    return console.error(err);
-                                }
-                                console.log(metadata.infohash + ".torrent has saved.");
-                            });
-                        }
-                    });
-                } else {
-                    fs.writeFile(torrentFilePathSaveTo, bencode.encode({'info': metadata.info}), function(err) {
-                        if (err) {
-                            return console.error(err);
-                        }
-                        console.log(metadata.infohash + ".torrent has saved.");
-                    });
-                }
-            });
+
+            // var i;
+            // for(i = 0; i < data.files.length; i++) {
+            //     var item = data.files[i];
+            //     var sql = "insert into t_files(name,size,torrent_id) values (?,?,?)";
+            //     db.insert(sql,[item.name,item.size,metadata.infohashclear],function(err,result) {
+            //         if(err) {
+            //             console.error(err);
+            //         }
+            //     });
+            // }
+
+            // fs.exists(torrentDir,function(exist) {
+            //     if(!exist) {
+            //         fs.mkdir(torrentDir,function(err) {
+            //             if(err) {
+            //                 console.error(err);
+            //             } else {
+            //                 fs.writeFile(torrentFilePathSaveTo, bencode.encode({'info': metadata.info}), function(err) {
+            //                     if (err) {
+            //                         return console.error(err);
+            //                     }
+            //                     console.log(metadata.infohash + ".torrent has saved.");
+            //                 });
+            //             }
+            //         });
+            //     } else {
+            //         fs.writeFile(torrentFilePathSaveTo, bencode.encode({'info': metadata.info}), function(err) {
+            //             if (err) {
+            //                 return console.error(err);
+            //             }
+            //             console.log(metadata.infohash + ".torrent has saved.");
+            //         });
+            //     }
+            // });
         }
         
     });
