@@ -18,7 +18,7 @@ var p2p = P2PSpider({
 
 p2p.ignore(function (infohash, rinfo, callback) {
     var torrentFilePathSaveTo = path.join(__dirname, "torrents", infohash + ".torrent");
-    fs.exists(torrentFilePathSaveTo, function(exists) {
+    fs.exists(torrentFilePathSaveTo, function (exists) {
         callback(exists); //if is not exists, download the metadata.
     });
 });
@@ -32,25 +32,21 @@ p2p.on('metadata', function (metadata) {
     var now = moment().format('YYYY-MM-DD HH:mm:ss');
     var magnet = 'magnet:?xt=urn:btih:' + metadata.infohash;
     var files = JSON.stringify(data.files);
-    files = files.replace(/,/g,"\,");
+    files = files.replace(/,/g, "\,");
     var torrentPath = "/torrents/" + time + "/" + metadata.infohash + ".torrent";
-    var sqlParam = [metadata.infohash,data.name,data.type,data.size,files,now,1,magnet,torrentPath];
-    db.insert(sql,sqlParam,function(err,result) {
-        if(err) {
+    var sqlParam = [metadata.infohash, data.name, data.type, data.size, files, now, 1, magnet, torrentPath];
+    db.insert(sql, sqlParam, function (err, result) {
+        if (err) {
             console.error(err);
         } else {
             console.log("insert torrent result:" + result);
 
-            // var i;
-            // for(i = 0; i < data.files.length; i++) {
-            //     var item = data.files[i];
-            //     var sql = "insert into t_files(name,size,torrent_id) values (?,?,?)";
-            //     db.insert(sql,[item.name,item.size,metadata.infohashclear],function(err,result) {
-            //         if(err) {
-            //             console.error(err);
-            //         }
-            //     });
-            // }
+            var sqlInsert = "insert into t_bt(torrent_id,content,create_date) values (?,?,?)";
+            db.insert(sqlInsert, [metadata.infohash, bencode.encode({ 'info': metadata.info }), time], function (err, result) {
+                if (err) {
+                    console.error(err);
+                }
+            });
 
             // fs.exists(torrentDir,function(exist) {
             //     if(!exist) {
@@ -76,9 +72,9 @@ p2p.on('metadata', function (metadata) {
             //     }
             // });
         }
-        
+
     });
-    
+
 });
 
 p2p.listen(6881, '0.0.0.0');
